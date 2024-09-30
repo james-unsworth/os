@@ -76,3 +76,4 @@ clean:
 	rm -rf *.o *.bin *.elf $(OS_IMAGE)
 	rm -rf boot/*.o boot/*.bin boot/*.elf
 	rm -rf kernel/*.o kernel/*.bin kernel/*.elf
+	rm -rf drivers/*.o drivers/*.bin drivers/*.elf
