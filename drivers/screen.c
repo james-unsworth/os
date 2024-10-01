@@ -9,6 +9,7 @@ int print_char(char c, int col, int row, char attr);
 int get_offset(int col, int row);
 int get_offset_row(int offset);
 int get_offset_col(int offset);
+int handle_scrolling(int offset);
 
 /**********************************************************
  * Public Kernel API functions                            *
@@ -80,21 +81,8 @@ int print_char(char c, int col, int row, char attr) {
         vidmem[offset+1] = attr;
         offset += 2;
     }
-    /* Scroll function 
-    * Copies memory from each row and pastes it to the one above
-    */
-    if (offset >= MAX_COLS * MAX_ROWS * 2) {
-        for (int i = 1; i < MAX_ROWS; i++) {
-            memory_copy(get_offset(0,i) + VIDEO_ADDRESS,
-                        get_offset(0, i-1) + VIDEO_ADDRESS, MAX_COLS * 2);
-            
-        }
-        char *last_line = get_offset(0, MAX_ROWS-1) + VIDEO_ADDRESS;
-        for (int i = 0; i < MAX_COLS*2; i++) last_line[i] = 0;
-
-        offset -= 2 * MAX_COLS;
-    }
-
+    
+    offset = handle_scrolling(offset);
     set_cursor_offset(offset);
     return offset;
 }
@@ -118,6 +106,26 @@ void set_cursor_offset(int offset) {
     port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset >> 8));
     port_byte_out(REG_SCREEN_CTRL, 15);
     port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset & 0xff));
+}
+
+int handle_scrolling(int offset) {
+    /* Scroll function 
+    * Copies memory from each row and pastes it to the one above
+    */
+    if (offset < MAX_COLS * MAX_ROWS * 2) {
+        return offset;
+    }
+
+    for (int i = 1; i < MAX_ROWS; i++) {
+        memory_copy(get_offset(0,i) + VIDEO_ADDRESS,
+                    get_offset(0, i-1) + VIDEO_ADDRESS, MAX_COLS * 2);
+            
+    }
+    char *last_line = get_offset(0, MAX_ROWS-1) + VIDEO_ADDRESS;
+    for (int i = 0; i < MAX_COLS*2; i++) last_line[i] = 0;
+
+    offset -= 2 * MAX_COLS;
+    return offset;
 }
 
 void clear_screen() {
