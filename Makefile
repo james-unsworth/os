@@ -62,7 +62,7 @@ $(KERNEL_BIN): $(KERNEL_ELF)
 	nasm $< -f bin -o $@
 
 
-# Run OS image Qemu 
+# Run OS image using Qemu 
 run: $(OS_IMAGE)
 	qemu-system-i386 -fda $<
 

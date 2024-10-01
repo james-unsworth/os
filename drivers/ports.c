@@ -1,26 +1,35 @@
-// Port I/O functions: 
-
-// read byte from port
-unsigned char port_byte_in (unsigned char port) {
+/**
+ * Read a byte from the specified port
+ */
+unsigned char port_byte_in(unsigned short port) {
     unsigned char result;
-    // read result from port (dx) and store in al
-    __asm__( "in %%dx, %%al" : "=a" (result) : "d" (port) );
+    /* Inline assembler syntax
+     * !! Notice how the source and destination registers are switched from NASM !!
+     *
+     * '"=a" (result)'; set '=' the C variable '(result)' to the value of register e'a'x
+     * '"d" (port)': map the C variable '(port)' into e'd'x register
+     *
+     * Inputs and outputs are separated by colons
+     */
+    __asm__("in %%dx, %%al" : "=a" (result) : "d" (port));
     return result;
 }
 
-// write byte to port
-void port_byte_out (unsigned char port, unsigned char data) {
-    __asm__( "out %%al, %%dx" : :"a" (data), "d" (port) );
+void port_byte_out(unsigned short port, unsigned char data) {
+    /* Notice how here both registers are mapped to C variables and
+     * nothing is returned, thus, no equals '=' in the asm syntax 
+     * However we see a comma since there are two variables in the input area
+     * and none in the 'return' area
+     */
+    __asm__("out %%al, %%dx" : : "a" (data), "d" (port));
 }
 
-// read word from port
 unsigned short port_word_in(unsigned short port) {
     unsigned short result;
-    __asm__( "in %%dx, %%ax" : "=a" (result) : "d" (port) );
+    __asm__("in %%dx, %%ax" : "=a" (result) : "d" (port));
     return result;
 }
 
-// write word to port
 void port_word_out(unsigned short port, unsigned short data) {
-    __asm__( "out %%ax, %%dx" : : "a" (data), "d" (port) );
+    __asm__("out %%ax, %%dx" : : "a" (data), "d" (port));
 }
