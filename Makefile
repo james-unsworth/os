@@ -6,26 +6,24 @@ OBJCOPY = i386-elf-objcopy	# Tool for converting ELF executables into raw binary
 GDB = gdb					# Debugger for debugging the kernel in QEMU
 
 # Compilation and linking flags 
-CFLAGS = -ffreestanding -c -g	# Compiler flags: freestanding environment, debugging information
+CFLAGS = -ffreestanding -c -g
 LDFLAGS = -Ttext 0x1000			# Linker flags: link the kernel at memory address 0x1000
 
 # Source files
-BOOTLOADER_SRC = boot/boot_sect.asm						# Bootloader source file (assembly)
-KERNEL_ENTRY_SRC = kernel/kernel_entry.asm 				# Kernal entry point (assembly)
-ASM_SOURCES = cpu/interrupt.asm			
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c)	# All C source files in kernel/ and drivers/ directories
-HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h)	# All C header files in kernel/ and drivers/ directories
+BOOTLOADER_SRC = boot/boot_sect.asm				# Bootloader source file (assembly)
+KERNEL_ENTRY_SRC = kernel/kernel_entry.asm 		# Kernal entry point (assembly)
+INTERRUPT_SRC = cpu/interrupt.asm
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c libc/*.c)	# All C source files in kernel/ and drivers/ directories
+HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h libc/*.h)
 
 # Object and binary files
 BOOTLOADER_OBJ = boot/boot_sect.bin			# Bootloader binary file
 KERNEL_ELF = kernel/kernel.elf				# Kernel ELF file for debugging
 KERNEL_BIN = kernel/kernel.bin				# Kernel binary file for bootable image
 KERNEL_ENTRY_OBJ = kernel/kernel_entry.o 	# Kernel entry object file 
-OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}	# Object files generated from C source file
-ASM_OBJ = ${ASM_SOURCES:.asm=.o} 
-
+INTERRUPT_OBJ = cpu/interrupt.o
+OBJ = ${C_SOURCES:.c=.o}
 OS_IMAGE = os-image.bin						# Final OS image that combines bootloader and kernel binary
-
 
 # Default target: build OS image
 all: $(OS_IMAGE)
@@ -42,8 +40,11 @@ $(BOOTLOADER_OBJ) : $(BOOTLOADER_SRC)
 $(KERNEL_ENTRY_OBJ): $(KERNEL_ENTRY_SRC)
 	$(AS) -f elf32 -o $@ $<
 
+$(INTERRUPT_OBJ): $(INTERRUPT_SRC)
+	$(AS) -f elf32 -o $@ $<
+
 # link all kernel object files into kernel ELF files (used for debugging)
-$(KERNEL_ELF): $(KERNEL_ENTRY_OBJ) $(OBJ) $(ASM_OBJ)  # Include the ISR object file
+$(KERNEL_ELF): $(KERNEL_ENTRY_OBJ) $(OBJ) $(INTERRUPT_OBJ)  # Include the ISR object file
 	$(LD) $(LDFLAGS) -o $@ $^
 
 # Convert kernel ELF file to raw binary format for OS image

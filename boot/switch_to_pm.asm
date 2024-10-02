@@ -10,7 +10,7 @@ switch_to_pm:
 
     jmp CODE_SEG:init_pm
 
-    retndi
+    ret
 
 [bits 32]
 init_pm:

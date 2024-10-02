@@ -21,7 +21,7 @@ isr_common_stub:
     mov gs, ax
     popa
     add esp, 8  ; Cleans up the pushed error code and pushed ISR number
-    stip
+    sti
     iret        ; Pops CS, EIP, EFLAGS, SS, and ESP
 
 
