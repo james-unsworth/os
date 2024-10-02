@@ -10,17 +10,19 @@ CFLAGS = -ffreestanding -c -g	# Compiler flags: freestanding environment, debugg
 LDFLAGS = -Ttext 0x1000			# Linker flags: link the kernel at memory address 0x1000
 
 # Source files
-BOOTLOADER_SRC = boot/boot_sect.asm				# Bootloader source file (assembly)
-KERNEL_ENTRY_SRC = kernel/kernel_entry.asm 		# Kernal entry point (assembly)
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)	# All C source files in kernel/ and drivers/ directories
-HEADERS = $(wildcard kernel/*.h drivers/*.h)	# All C header files in kernel/ and drivers/ directories
+BOOTLOADER_SRC = boot/boot_sect.asm						# Bootloader source file (assembly)
+KERNEL_ENTRY_SRC = kernel/kernel_entry.asm 				# Kernal entry point (assembly)
+ASM_SOURCES = cpu/interrupt.asm			
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c)	# All C source files in kernel/ and drivers/ directories
+HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h)	# All C header files in kernel/ and drivers/ directories
 
 # Object and binary files
 BOOTLOADER_OBJ = boot/boot_sect.bin			# Bootloader binary file
 KERNEL_ELF = kernel/kernel.elf				# Kernel ELF file for debugging
 KERNEL_BIN = kernel/kernel.bin				# Kernel binary file for bootable image
 KERNEL_ENTRY_OBJ = kernel/kernel_entry.o 	# Kernel entry object file 
-OBJ = ${C_SOURCES:.c=.o}					# Object files generated from C source file
+OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}	# Object files generated from C source file
+ASM_OBJ = ${ASM_SOURCES:.asm=.o} 
 
 OS_IMAGE = os-image.bin						# Final OS image that combines bootloader and kernel binary
 
@@ -41,7 +43,7 @@ $(KERNEL_ENTRY_OBJ): $(KERNEL_ENTRY_SRC)
 	$(AS) -f elf32 -o $@ $<
 
 # link all kernel object files into kernel ELF files (used for debugging)
-$(KERNEL_ELF): $(KERNEL_ENTRY_OBJ) ${OBJ}
+$(KERNEL_ELF): $(KERNEL_ENTRY_OBJ) $(OBJ) $(ASM_OBJ)  # Include the ISR object file
 	$(LD) $(LDFLAGS) -o $@ $^
 
 # Convert kernel ELF file to raw binary format for OS image
@@ -68,12 +70,11 @@ run: $(OS_IMAGE)
 
 # Debug OS using Qemu and GDB
 debug: $(OS_IMAGE) $(KERNEL_ELF)
-	qemu-system-i386 -s -S -fda $(OS_IMAGE) &
+	qemu-system-i386 -s -S -fda $(OS_IMAGE) -d guest_errors,int &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file $(KERNEL_ELF)"
 
 # Clean up generated files
 clean:
-	rm -rf *.o *.bin *.elf $(OS_IMAGE)
-	rm -rf boot/*.o boot/*.bin boot/*.elf
-	rm -rf kernel/*.o kernel/*.bin kernel/*.elf
-	rm -rf drivers/*.o drivers/*.bin drivers/*.elf
+
+	rm -rf *.bin *.dis *.o $(OS_IMAGE) *.elf
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o kernel/*.elf kernel/*.bin
