@@ -7,7 +7,8 @@ int main(void) {
     isr_install();
     irq_install();
 
-    kprint("Type something, it will go through the kernel\n"
+    clear_screen();
+    kprint("Type something, it will go through the kernel\n\n"
         "Type END to halt the CPU\n> ");
 }
 
