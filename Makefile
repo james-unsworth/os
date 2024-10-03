@@ -78,4 +78,4 @@ debug: $(OS_IMAGE) $(KERNEL_ELF)
 clean:
 
 	rm -rf *.bin *.dis *.o $(OS_IMAGE) *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o kernel/*.elf kernel/*.bin
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o kernel/*.elf kernel/*.bin libc/*.o
