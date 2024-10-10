@@ -1,4 +1,5 @@
 #include "string.h"
+#include "../drivers/screen.h"
 
 // Convert integer to ascii character
 void int_to_ascii(int n, char str[]) {
@@ -16,24 +17,29 @@ void int_to_ascii(int n, char str[]) {
 }
 
 void hex_to_ascii(int n, char str[]) {
-    append(str, '0');
-    append(str, 'x');
-    char zeros = 0;
+    append(str, '0');   // Append "0"
+    append(str, 'x');   // Append "x" for hexadecimal
 
+    char zeros = 0;
     u32 tmp;
     int i;
-    for (i = 28; i > 0; i -= 4) {
+
+    for (i = 28; i >= 0; i -= 4) {
         tmp = (n >> i) & 0xF;
         if (tmp == 0 && zeros == 0) continue;
         zeros = 1;
-        if (tmp > 0xA) append(str, tmp - 0xA + 'a');
+
+        if (tmp >= 0xA) append(str, tmp - 0xA + 'a');
         else append(str, tmp + '0');
     }
 
-    tmp = n & 0xF;
-    if (tmp >= 0xA) append(str, tmp - 0xA + 'a');
-    else append(str, tmp + '0');
+    if (zeros == 0) {
+        append(str, '0');
+    }
+    kprint(str);
+    kprint("\n");
 }
+
 
 void reverse(char s[]) {
     int c, i, j;
@@ -50,10 +56,13 @@ int strlen(char s[]) {
     return i;
 }
 
-void append(char s[], char n) {
-    int len = strlen(s);
-    s[len] = n;
-    s[len+1] = '\0';
+void append(char *str, char c) {
+    int len = 0;
+    while (str[len] != '\0') {
+        len++;  // Find the current length of the string
+    }
+    str[len] = c;    // Add the new character at the end
+    str[len + 1] = '\0';  // Null-terminate the string
 }
 
 void backspace(char s[]) {
@@ -61,7 +70,7 @@ void backspace(char s[]) {
     s[len-1] = '\0';
 }
 
-int strcmp(char s1[], char s2[]) {
+int strcmp(const char *s1, const char *s2) {
     int i;
     for (i = 0; s1[i] == s2[i]; i++) {
         if (s1[i] == '\0') return 0;

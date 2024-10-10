@@ -13,8 +13,8 @@ LDFLAGS = -Ttext 0x1000			# Linker flags: link the kernel at memory address 0x10
 BOOTLOADER_SRC = boot/boot_sect.asm				# Bootloader source file (assembly)
 KERNEL_ENTRY_SRC = kernel/kernel_entry.asm 		# Kernal entry point (assembly)
 INTERRUPT_SRC = cpu/interrupt.asm
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c libc/*.c)	# All C source files in kernel/ and drivers/ directories
-HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h libc/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c libc/*.c shell/*.c commands/*.c)	# All C source files in kernel/ and drivers/ directories
+HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h libc/*.h shell/*.h commands/*.h)
 
 # Object and binary files
 BOOTLOADER_OBJ = boot/boot_sect.bin			# Bootloader binary file
@@ -76,6 +76,5 @@ debug: $(OS_IMAGE) $(KERNEL_ELF)
 
 # Clean up generated files
 clean:
-
-	rm -rf *.bin *.dis *.o $(OS_IMAGE) *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o kernel/*.elf kernel/*.bin libc/*.o
+	rm -rf *.bin *.dis *.o $(OS_IMAGE) *.elf *.img
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o kernel/*.elf kernel/*.bin libc/*.o shell/*.o commands/*.o
