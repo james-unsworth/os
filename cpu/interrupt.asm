@@ -1,11 +1,14 @@
+; interrupt.asm
+
+; Interrupt requests and service routines
+
 [extern isr_handler]
 [extern irq_handler]
 
 isr_common_stub:
-    ; Save CPU state
-    pusha       ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
+    pusha       
     mov ax, ds  
-    push eax    ; Push data segement
+    push eax    
     mov ds, ax
 	mov es, ax
 	mov fs, ax
@@ -13,20 +16,17 @@ isr_common_stub:
 
     call isr_handler
 
-    ; Restore state
     pop eax
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
     popa
-    add esp, 8  ; Cleans up the pushed error code and pushed ISR number
+    add esp, 8  
     sti
-    iret        ; Pops CS, EIP, EFLAGS, SS, and ESP
+    iret       
 
 
-; Common IRQ code. Identical to ISR code except for the 'call' 
-; and the 'pop ebx'
 irq_common_stub:
     pusha 
     mov ax, ds
@@ -37,9 +37,9 @@ irq_common_stub:
     mov fs, ax
     mov gs, ax
 
-    call irq_handler ; Different than the ISR code
+    call irq_handler 
 
-    pop ebx  ; Different than the ISR code
+    pop ebx  
     mov ds, bx
     mov es, bx
     mov fs, bx
@@ -50,7 +50,6 @@ irq_common_stub:
     iret 
 
 
-; Make ISRs global
 global isr0
 global isr1
 global isr2
@@ -83,7 +82,7 @@ global isr28
 global isr29
 global isr30
 global isr31
-; IRQs
+
 global irq0
 global irq1
 global irq2

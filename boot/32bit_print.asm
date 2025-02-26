@@ -1,25 +1,29 @@
-; printing in 32-bit protected mode uses VGA memory to separate screen into array of cells 80x25
-; store ascii character and attributes in each cell
+; 32bit_print.asm
+; Print functions for 32-bit protected mode
+
+; print_32 - Print null terminated string at [ebx]
+
+; Screen = 80x25
 
 [bits 32]
 
-VIDEO_MEMORY equ 0xb8000        ; video memory always starts at this address
+VIDEO_MEMORY equ 0xb8000        
 WHITE_ON_BLACK equ 0x0f
 
 print_32:
     pusha
-    mov edx, VIDEO_MEMORY       ; set edx start of video memory
+    mov edx, VIDEO_MEMORY       
 
 print_32_loop:
-    mov al, [ebx]               ; store char in ebx in al
-    mov ah, WHITE_ON_BLACK      ; store attributes in ah
+    mov al, [ebx]               
+    mov ah, WHITE_ON_BLACK      
 
-    cmp al, 0                   ; if end, done
+    cmp al, 0                  
     je print_32_done
 
-    mov [edx] , ax              ; store character and attribute in video memory
-    add ebx, 1                  ; next char
-    add edx, 2                  ; next video memory position
+    mov [edx] , ax              
+    add ebx, 1                  
+    add edx, 2                  
 
     jmp print_32_loop
 

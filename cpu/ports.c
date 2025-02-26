@@ -1,8 +1,6 @@
 #include "ports.h"
-
-/* 
-* Use inline assembly to port bytes in and out of device drivers
-*/ 
+/* ports.c
+ * Functions for accessing I/O ports */
 
 unsigned char port_byte_in(unsigned short port) {
     unsigned char result;

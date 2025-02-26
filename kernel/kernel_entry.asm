@@ -1,10 +1,11 @@
+; kernel_entry.asm
+; Entry point at 0x1000, jumps to C kernel
+
 section .text
 global _start        
 
-; Allow main function in kernel.c to be called
 extern kernel_main          
 
-; Hand control to kernel
 _start:
     call kernel_main      
     hlt              

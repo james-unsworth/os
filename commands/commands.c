@@ -1,3 +1,6 @@
+/* commmands.c
+ * Initialise and populate command table */
+
 #include "commands.h"
 #include "../kernel/kernel.h"
 #include "../libc/mem.h"
@@ -7,26 +10,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-command_t *commands;  // Global pointer to command table
-u32 num_commands;     // Number of commands
+command_t *commands;  
+u32 num_commands;     
 
 int initialise_command_table() {
     u32 phys_addr;
     num_commands = 3;
 
-    // Calculate the size of the command table
     u32 table_size = sizeof(command_t) * num_commands;
 
-    // Dynamically allocate memory for the command table using kmalloc
-    commands = (command_t *) kmalloc(table_size, 1, &phys_addr);  // Use global `commands`
+    commands = (command_t *) kmalloc(table_size, 1, &phys_addr);  
 
-    // Check if memory allocation was successful
     if (commands == NULL) {
         kprint("Memory allocation failed!\n");
         return -1;
     }
 
-    // Populate the command table
     commands[0].name = "QUIT";
     commands[0].func = quit_command;
 
@@ -44,11 +43,11 @@ void execute_command(char *input) {
 
     for (int i = 0; i < num_commands; i++) {
         if (strcmp(input, commands[i].name) == 0) {
-            commands[i].func();  // Execute the corresponding function
+            commands[i].func();  
             return;
         }
     }
-    unknown_command(input);  // Handle unknown commands
+    unknown_command(input); 
 }
 
 void quit_command() {
@@ -62,11 +61,11 @@ void clear_command() {
 
 void page_command() {
     u32 phys_addr;
-    u32 page = kmalloc(1000, 1, &phys_addr);  // Allocate memory
+    u32 page = kmalloc(1000, 1, &phys_addr);  
     char page_str[16] = "";
-    hex_to_ascii(page, page_str);  // Convert page address to ASCII
+    hex_to_ascii(page, page_str); 
     char phys_str[16] = "";
-    hex_to_ascii(phys_addr, phys_str);  // Convert physical address to ASCII
+    hex_to_ascii(phys_addr, phys_str); 
 
     kprint("Page: ");
     kprint(page_str);
@@ -86,29 +85,28 @@ void unknown_command(char *input) {
     kprint("\n");
 }
 
+/* Trim whitespace */
 void trim(char *str) {
     int index = 0;
     int i;
 
-    // Trim leading whitespace
     while (str[index] == ' ' || str[index] == '\n' || str[index] == '\r') {
         index++;
     }
 
-    // Shift all characters to the left
     if (index > 0) {
         i = 0;
         while (str[i + index]) {
-            str[i] = str[i + index];  // Shift characters left
+            str[i] = str[i + index];  
             i++;
         }
-        str[i] = '\0';  // Null-terminate the string
+        str[i] = '\0';  
     }
 
-    // Trim trailing whitespace
     i = strlen(str) - 1;
     while (i >= 0 && (str[i] == ' ' || str[i] == '\n' || str[i] == '\r')) {
-        str[i] = '\0';  // Replace trailing spaces/newlines with null
+        str[i] = '\0';  
         i--;
     }
 }
+

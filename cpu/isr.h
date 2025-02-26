@@ -3,7 +3,6 @@
 
 #include "types.h"
 
-/* ISRs reserved for CPU exceptions */
 extern void isr0();
 extern void isr1();
 extern void isr2();
@@ -37,7 +36,6 @@ extern void isr29();
 extern void isr30();
 extern void isr31();
 
-/* IRQ definitions */
 extern void irq0();
 extern void irq1();
 extern void irq2();
@@ -73,10 +71,11 @@ extern void irq15();
 #define IRQ15 47
 
 typedef struct {
-    u32 ds; // Data segment selector
-    u32 edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha
-    u32 int_no, err_code; // Interrupt no. and error code
-    u32 eip, cs, eflags, useresp, ss; // Pushed by processor automatically 
+/* Holds state of registers when interrupt occurs */
+    u32 ds;                                         
+    u32 edi, esi, ebp, esp, ebx, edx, ecx, eax;     
+    u32 int_no, err_code;      
+    u32 eip, cs, eflags, useresp, ss;               
 } registers_t;
 
 void isr_install();

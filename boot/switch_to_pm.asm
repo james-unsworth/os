@@ -1,9 +1,12 @@
+; switch_to_pm.asm
+; Switch CPU to 32-bt protected mode
+
 switch_to_pm:
-    cli     ; disable interrupts
+    cli    
 
-    lgdt [gdt_descriptor]       ; load gdt
+    lgdt [gdt_descriptor]      
 
-    ; set 32-bit mode in cr0
+    ; enable protected mode
     mov eax, cr0       
     or eax, 0x1
     mov cr0, eax
@@ -14,7 +17,6 @@ switch_to_pm:
 
 [bits 32]
 init_pm:
-    ; update segment registers 
     mov ax, DATA_SEG        
     mov ds, ax
     mov ss, ax
@@ -22,7 +24,6 @@ init_pm:
     mov fs, ax
     mov gs, ax
 
-    ; update stack 
     mov ebp, 0x90000    
     mov esp, ebp
 

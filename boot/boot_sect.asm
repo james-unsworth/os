@@ -1,11 +1,16 @@
-[org 0x7c00] 
+; boot_sect.asm
+; Bootsector -- handles 16-bit to 32-bit mode transition
 
-; set stack out of the way
-mov bp, 0x9000    
+STACK_BASE          equ 0x9000
+BOOTLOADER_START    equ 0x7C00
+KERNEL_OFFSET       equ 0x1000
+KERNEL_SECTORS      equ 15
+
+[org BOOTLOADER_START] 
+
+mov bp, STACK_BASE    
 mov sp, bp
 
-
-KERNEL_OFFSET equ 0x1000
 mov [BOOT_DRIVE], dl
 
 mov bx, MSG_REAL_MODE
@@ -28,7 +33,7 @@ load_kernel:
     call print_nl_16
 
     mov bx, KERNEL_OFFSET 
-    mov dh, 15
+    mov dh, KERNEL_SECTORS
     mov dl, [BOOT_DRIVE]
     call disk_load
     ret
@@ -38,7 +43,6 @@ BEGIN_PM:
     mov ebx, MSG_PROT_MODE
     call print_32
 
-    ; jump to kernel
     jmp CODE_SEG:KERNEL_OFFSET 
     jmp $   
 
@@ -50,8 +54,7 @@ BOOT_DRIVE db 0
 MSG_REAL_MODE db "Started in 16-bit Real Mode." , 0
 MSG_PROT_MODE db "Successfully landed in 32-bit Protected Mode." , 0
 MSG_LOAD_KERNEL db "Loading kernel into memory..." , 0
-ERROR db "Error", 0
 
 times 510-($-$$) db 0
-dw 0xAA55         ; Boot signature
+dw 0xAA55       
 

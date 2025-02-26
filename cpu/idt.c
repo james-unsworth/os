@@ -1,3 +1,6 @@
+/* idt.c
+ * IDT initialisation */
+
 #include "idt.h"
 
 idt_gate_t idt[IDT_ENTRIES];
@@ -11,7 +14,6 @@ void set_idt_gate(int n, u32 handler) {
     idt[n].high_offset = high_16(handler);
 }
 
-// Load idt into idt register
 void set_idt() {
     idt_reg.base = (u32) &idt;
     idt_reg.limit = IDT_ENTRIES * sizeof(idt_gate_t) - 1;

@@ -1,7 +1,9 @@
+/* string.c
+ * String functions */
+
 #include "string.h"
 #include "../drivers/screen.h"
 
-// Convert integer to ascii character
 void int_to_ascii(int n, char str[]) {
     int i, sign;
     if ((sign = n) < 0) n = -n;
@@ -17,8 +19,8 @@ void int_to_ascii(int n, char str[]) {
 }
 
 void hex_to_ascii(int n, char str[]) {
-    append(str, '0');   // Append "0"
-    append(str, 'x');   // Append "x" for hexadecimal
+    append(str, '0');   
+    append(str, 'x');  
 
     char zeros = 0;
     u32 tmp;
@@ -59,10 +61,10 @@ int strlen(char s[]) {
 void append(char *str, char c) {
     int len = 0;
     while (str[len] != '\0') {
-        len++;  // Find the current length of the string
+        len++;  
     }
-    str[len] = c;    // Add the new character at the end
-    str[len + 1] = '\0';  // Null-terminate the string
+    str[len] = c;   
+    str[len + 1] = '\0';  
 }
 
 void backspace(char s[]) {

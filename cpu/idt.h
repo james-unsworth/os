@@ -3,8 +3,7 @@
 
 #include "types.h"
 
-#define KERNEL_CS 0x08;     // Address of kernel code segment
-
+#define KERNEL_CS 0x08;     
 typedef struct {
     u16 low_offset;
     u16 sel;
@@ -20,7 +19,6 @@ typedef struct {
 
 #define IDT_ENTRIES 256
 
-// Set actual idt as array of idt_gate_t structs
 extern idt_gate_t idt[IDT_ENTRIES];
 extern idt_register_t idt_reg;
 
